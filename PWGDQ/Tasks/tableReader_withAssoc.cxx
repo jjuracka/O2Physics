@@ -1317,6 +1317,7 @@ struct AnalysisSameEventPairing {
     Configurable<std::string> lutPath{"lutPath", "GLO/Param/MatLUT", "Path of the Lut parametrization"};
     Configurable<std::string> geoPath{"geoPath", "GLO/Config/GeometryAligned", "Path of the geometry file"};
     Configurable<std::string> GrpLhcIfPath{"grplhcif", "GLO/Config/GRPLHCIF", "Path on the CCDB for the GRPLHCIF object"};
+    Configurable<std::string> efficiencyPath{"effHistPath", "Users/z/zhxiong/efficiency", "Path on the CCDB for the efficiency histograms"};
   } fConfigCCDB;
 
   struct : ConfigurableGroup {
@@ -1333,6 +1334,8 @@ struct AnalysisSameEventPairing {
     Configurable<float> centerMassEnergy{"energy", 13600, "Center of mass energy in GeV"};
     Configurable<bool> propTrack{"cfgPropTrack", true, "Propgate tracks to associated collision to recalculate DCA and momentum vector"};
     Configurable<bool> useRemoteCollisionInfo{"cfgUseRemoteCollisionInfo", false, "Use remote collision information from CCDB"};
+    Configurable<bool> useEfficiencyWeighting{"cfgUseEfficiencyWeighting", false, "Apply efficiency weighting to the pairs from CCDB"};
+    Configurable<int> efficiencyType{"cfgEfficiencyType", 0, "Type of efficiency to apply from CCDB: 0 no efficiency, 1 pt-cent-costhetastar"};
   } fConfigOptions;
   struct : ConfigurableGroup {
     Configurable<bool> applyBDT{"applyBDT", false, "Flag to apply ML selections"};
@@ -1746,6 +1749,11 @@ struct AnalysisSameEventPairing {
       o2::parameters::GRPLHCIFData* grpo = fCCDB->getForTimeStamp<o2::parameters::GRPLHCIFData>(fConfigCCDB.GrpLhcIfPath, timestamp);
       VarManager::SetCollisionSystem(grpo);
     }
+
+    if (fConfigOptions.useEfficiencyWeighting) {
+      auto effList = fCCDB->getForTimeStamp<TList>(fConfigCCDB.efficiencyPath.value, timestamp);
+      VarManager::SetEfficiencyObject(fConfigOptions.efficiencyType.value, effList->FindObject("efficiency"));
+    }
   }
 
   // Template function to run same event pairing (barrel-barrel, muon-muon, barrel-muon)
@@ -1866,6 +1874,10 @@ struct AnalysisSameEventPairing {
           }
           if constexpr (eventHasQvectorCentr) {
             VarManager::FillPairVn<TEventFillMap, TPairType>(t1, t2);
+          }
+
+          if (fConfigOptions.useEfficiencyWeighting) {
+            VarManager::FillEfficiency();
           }
 
           dielectronList(event.globalIndex(), VarManager::fgValues[VarManager::kMass],
