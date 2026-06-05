@@ -22,6 +22,7 @@
 #include <Framework/HistogramRegistry.h>
 #include <Framework/runDataProcessing.h>
 #include "Common/DataModel/EventSelection.h"
+#include "Common/CCDB/EventSelectionParams.h"
 #include "Common/DataModel/FT0Corrected.h"
 #include <CommonDataFormat/BunchFilling.h>
 #include <CommonConstants/LHCConstants.h>
