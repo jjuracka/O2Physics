@@ -292,13 +292,13 @@ struct UpcRhoAnalysis {
         rQC.get<TH2>(HIST("QC/collisions/hSelectionCounterPerRun"))->GetYaxis()->SetBinLabel(i + 1, std::to_string(runNumbers[i]).c_str());
       // tracks
       rQC.add("QC/tracks/all/hTpcNSigmaPi", ";TPC #it{n#sigma}(#pi);counts", kTH1D, {nSigmaAxis});
-      rQC.add("QC/tracks/all/hPtVsEtaVsTpcNSigmaPi", ";TPC #it{n#sigma}(#pi);#it{p}_{T} (GeV/#it{c});#it{#eta}", kTH3D, {{100, -10.0, 10.0}, {200, 0.0, 4.0}, {18, -0.9, 0.9}});
+      rQC.add("QC/tracks/all/hPtVsEtaVsTpcNSigmaPi", ";TPC #it{n#sigma}(#pi);#it{p}_{T} (GeV/#it{c});#it{#eta}", kTH3D, {{100, -10.0, 10.0}, {100, 0.0, 1.0}, {180, -0.9, 0.9}});
       rQC.add("QC/tracks/all/hTpcNSigmaEl", ";TPC #it{n#sigma}(e);counts", kTH1D, {nSigmaAxis});
-      rQC.add("QC/tracks/all/hPtVsEtaVsTpcNSigmaEl", ";TPC #it{n#sigma}(e);#it{p}_{T} (GeV/#it{c});#it{#eta}", kTH3D, {{100, -10.0, 10.0}, {200, 0.0, 4.0}, {18, -0.9, 0.9}});
+      rQC.add("QC/tracks/all/hPtVsEtaVsTpcNSigmaEl", ";TPC #it{n#sigma}(e);#it{p}_{T} (GeV/#it{c});#it{#eta}", kTH3D, {{100, -10.0, 10.0}, {100, 0.0, 1.0}, {180, -0.9, 0.9}});
       rQC.add("QC/tracks/all/hTpcNSigmaKa", ";TPC #it{n#sigma}(K);counts", kTH1D, {nSigmaAxis});
-      rQC.add("QC/tracks/all/hPtVsEtaVsTpcNSigmaKa", ";TPC #it{n#sigma}(K);#it{p}_{T} (GeV/#it{c});#it{#eta}", kTH3D, {{100, -10.0, 10.0}, {200, 0.0, 4.0}, {18, -0.9, 0.9}});
+      rQC.add("QC/tracks/all/hPtVsEtaVsTpcNSigmaKa", ";TPC #it{n#sigma}(K);#it{p}_{T} (GeV/#it{c});#it{#eta}", kTH3D, {{100, -10.0, 10.0}, {100, 0.0, 1.0}, {180, -0.9, 0.9}});
       rQC.add("QC/tracks/all/hTpcNSigmaPr", ";TPC #it{n#sigma}(p);counts", kTH1D, {nSigmaAxis});
-      rQC.add("QC/tracks/all/hPtVsEtaVsTpcNSigmaPr", ";TPC #it{n#sigma}(p);#it{p}_{T} (GeV/#it{c});#it{#eta}", kTH3D, {{100, -10.0, 10.0}, {200, 0.0, 4.0}, {18, -0.9, 0.9}});
+      rQC.add("QC/tracks/all/hPtVsEtaVsTpcNSigmaPr", ";TPC #it{n#sigma}(p);#it{p}_{T} (GeV/#it{c});#it{#eta}", kTH3D, {{100, -10.0, 10.0}, {100, 0.0, 1.0}, {180, -0.9, 0.9}});
       rQC.add("QC/tracks/all/hDcaXYZ", ";track #it{DCA}_{z} (cm);track #it{DCA}_{xy} (cm);counts", kTH2D, {{1000, -5.0, 5.0}, {400, -2.0, 2.0}});
       rQC.add("QC/tracks/all/hItsNCls", ";ITS #it{N}_{cls};counts", kTH1D, {{9, -0.5, 8.5}});
       rQC.add("QC/tracks/all/hItsChi2NCl", ";ITS #it{#chi}^{2}/#it{N}_{cls};counts", kTH1D, {{150, 0.0, 15.0}});
