@@ -437,6 +437,8 @@ struct UpcRhoAnalysis {
       rResolution.add("MC/resolution/system/2D/hPtVsPt", ";1/#it{p}_{T, true} (GeV/#it{c});#it{p}_{T, reco} (GeV/#it{c});counts", kTH2D, {ptAxis, ptAxis});
       rResolution.add("MC/resolution/system/1D/hY", ";#it{y}_{reco} - #it{y}_{true};counts", kTH1D, {resolutionAxis});
       rResolution.add("MC/resolution/system/2D/hYVsY", ";#it{y}_{true};#it{y}_{reco};counts", kTH2D, {yAxis, yAxis});
+      rResolution.add("MC/resolution/system/1D/hPhi", ";#it{#phi}_{reco} - #it{#phi}_{true} (rad);counts", kTH1D, {resolutionAxis});
+      rResolution.add("MC/resolution/system/2D/hPhiVsPhi", ";#it{#phi}_{true} (rad);#it{#phi}_{reco} (rad);counts", kTH2D, {phiAxis, phiAxis});
       rResolution.add("MC/resolution/system/1D/hDeltaPhi", ";#Delta#it{#phi}_{reco} - #Delta#it{#phi}_{true} (rad);counts", kTH1D, {resolutionAxis});
       rResolution.add("MC/resolution/system/2D/hDeltaPhiVsDeltaPhi", ";#Delta#it{#phi}_{true} (rad);#Delta#it{#phi}_{reco} (rad);counts", kTH2D, {deltaPhiAxis, deltaPhiAxis});
     }
