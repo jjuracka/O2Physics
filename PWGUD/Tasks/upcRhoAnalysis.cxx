@@ -1218,6 +1218,8 @@ struct UpcRhoAnalysis {
     rResolution.fill(HIST("MC/resolution/system/2D/hPtVsPt"), trueSystem.Pt(), recoSystem.Pt());
     rResolution.fill(HIST("MC/resolution/system/1D/hY"), recoSystem.Rapidity() - trueSystem.Rapidity());
     rResolution.fill(HIST("MC/resolution/system/2D/hYVsY"), trueSystem.Rapidity(), recoSystem.Rapidity());
+    rResolution.fill(HIST("MC/resolution/system/1D/hPhi"), phi(recoSystem.Px(), recoSystem.Py()) - phi(trueSystem.Px(), trueSystem.Py()));
+    rResolution.fill(HIST("MC/resolution/system/2D/hPhiVsPhi"), phi(trueSystem.Px(), trueSystem.Py()), phi(recoSystem.Px(), recoSystem.Py()));
     rResolution.fill(HIST("MC/resolution/system/1D/hDeltaPhi"), recoDeltaPhi - trueDeltaPhi);
     rResolution.fill(HIST("MC/resolution/system/2D/hDeltaPhiVsDeltaPhi"), trueDeltaPhi, recoDeltaPhi);
 
