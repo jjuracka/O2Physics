@@ -230,6 +230,7 @@ struct UpcRhoAnalysis {
   Configurable<float> tracksMaxTpcChi2NClCut{"tracksMaxTpcChi2NClCut", 3.0, "max TPC chi2/Ncls cut"};
   Configurable<float> tracksMinTpcNClsCrossedOverFindableCut{"tracksMinTpcNClsCrossedOverFindableCut", 1.0, "min TPC crossed rows / findable clusters cut"};
   Configurable<float> tracksMinPtCut{"tracksMinPtCut", 0.1, "min pT cut on tracks"};
+  Configurable<bool> applyPid{"applyPid", true, "apply PID before creating derived data?"};
 
   Configurable<float> systemMassMinCut{"systemMassMinCut", 0.5, "min M cut for reco system"};
   Configurable<float> systemMassMaxCut{"systemMassMaxCut", 1.0, "max M cut for reco system"};
@@ -916,6 +917,9 @@ struct UpcRhoAnalysis {
     float subleadingPhi = phi(subleadingTrack.px(), subleadingTrack.py());
     float phiRandom = getPhiRandom(cutTracksLVs);
     float phiCharge = getPhiCharge(cutTracks, cutTracksLVs);
+
+    if (applyPid && !tracksPassPID(cutTracks)) // apply PID cut before creating derived data if desired
+      return;
 
     // fill recoTree
     recoTree(collision.flags(), collision.runNumber(), collision.posX(), collision.posY(), collision.posZ(), collision.occupancyInTime(), collision.hadronicRate(), collision.globalBC() % o2::constants::lhc::LHCMaxBunches,
