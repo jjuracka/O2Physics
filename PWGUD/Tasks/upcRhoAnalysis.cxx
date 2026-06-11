@@ -317,6 +317,7 @@ struct UpcRhoAnalysis {
       rQC.addClone("QC/tracks/all/", "QC/tracks/systemSelections/");
       rQC.add("QC/tracks/trackSelections/hRemainingTracks", ";remaining tracks;counts", kTH1D, {{21, -0.5, 20.5}});
       rQC.add("QC/tracks/trackSelections/hTpcNSigmaPi2D", ";TPC #it{n#sigma}(#pi)_{leading};TPC #it{n#sigma}(#pi)_{subleading};counts", kTH2D, {nSigmaAxis, nSigmaAxis});
+      rQC.add("QC/tracks/trackSelections/hTpcNSigmaPi2DAfterCut", ";TPC #it{n#sigma}(#pi)_{leading};TPC #it{n#sigma}(#pi)_{subleading};counts", kTH2D, {nSigmaAxis, nSigmaAxis});
       rQC.add("QC/tracks/trackSelections/hTpcNSigmaEl2D", ";TPC #it{n#sigma}(e)_{leading};TPC #it{n#sigma}(e)_{subleading};counts", kTH2D, {nSigmaAxis, nSigmaAxis});
       rQC.add("QC/tracks/trackSelections/hTpcNSigmaKa2D", ";TPC #it{n#sigma}(K)_{leading};TPC #it{n#sigma}(K)_{subleading};counts", kTH2D, {nSigmaAxis, nSigmaAxis});
       rQC.add("QC/tracks/trackSelections/hTpcNSigmaPr2D", ";TPC #it{n#sigma}(p)_{leading};TPC #it{n#sigma}(p)_{subleading};counts", kTH2D, {nSigmaAxis, nSigmaAxis});
@@ -891,10 +892,6 @@ struct UpcRhoAnalysis {
       rQC.fill(HIST("QC/tracks/hSelectionCounter"), 15);
       rQC.fill(HIST("QC/tracks/hSelectionCounterPerRun"), 15, runIndex);
     }
-    rQC.fill(HIST("QC/tracks/trackSelections/hTpcNSigmaPi2D"), cutTracks[0].tpcNSigmaPi(), cutTracks[1].tpcNSigmaPi());
-    rQC.fill(HIST("QC/tracks/trackSelections/hTpcNSigmaEl2D"), cutTracks[0].tpcNSigmaEl(), cutTracks[1].tpcNSigmaEl());
-    rQC.fill(HIST("QC/tracks/trackSelections/hTpcNSigmaKa2D"), cutTracks[0].tpcNSigmaKa(), cutTracks[1].tpcNSigmaKa());
-    rQC.fill(HIST("QC/tracks/trackSelections/hTpcNSigmaPr2D"), cutTracks[0].tpcNSigmaPr(), cutTracks[1].tpcNSigmaPr());
 
     // create a vector of 4-vectors for selected tracks
     std::vector<ROOT::Math::PxPyPzMVector> cutTracksLVs;
@@ -905,6 +902,11 @@ struct UpcRhoAnalysis {
     // differentiate leading- and subleading-momentum tracks
     auto leadingTrack = momentum(cutTracks[0].px(), cutTracks[0].py(), cutTracks[0].pz()) > momentum(cutTracks[1].px(), cutTracks[1].py(), cutTracks[1].pz()) ? cutTracks[0] : cutTracks[1];
     auto subleadingTrack = (leadingTrack == cutTracks[0]) ? cutTracks[1] : cutTracks[0];
+
+    rQC.fill(HIST("QC/tracks/trackSelections/hTpcNSigmaPi2D"), leadingTrack.tpcNSigmaPi(), subleadingTrack.tpcNSigmaPi());
+    rQC.fill(HIST("QC/tracks/trackSelections/hTpcNSigmaEl2D"), leadingTrack.tpcNSigmaEl(), subleadingTrack.tpcNSigmaEl());
+    rQC.fill(HIST("QC/tracks/trackSelections/hTpcNSigmaKa2D"), leadingTrack.tpcNSigmaKa(), subleadingTrack.tpcNSigmaKa());
+    rQC.fill(HIST("QC/tracks/trackSelections/hTpcNSigmaPr2D"), leadingTrack.tpcNSigmaPr(), subleadingTrack.tpcNSigmaPr());
 
     float leadingPt = leadingTrack.pt();
     float subleadingPt = subleadingTrack.pt();
@@ -931,6 +933,7 @@ struct UpcRhoAnalysis {
 
     if (!tracksPassPID(cutTracks)) // apply PID cut
       return;
+    rQC.fill(HIST("QC/tracks/trackSelections/hTpcNSigmaPi2DAfterCut"), leadingTrack.tpcNSigmaPi(), subleadingTrack.tpcNSigmaPi());
 
     for (const auto& cutTrack : cutTracks) {
       rQC.fill(HIST("QC/tracks/hSelectionCounter"), 16);
