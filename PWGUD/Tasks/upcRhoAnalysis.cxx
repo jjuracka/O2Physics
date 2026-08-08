@@ -416,6 +416,8 @@ struct UpcRhoAnalysis {
       rMC.add("MC/system/hPhiCharge", ";#Delta#it{#phi}_{charge} (rad);counts", kTH1D, {deltaPhiAxis});
       rMC.add("MC/system/hPhiRandomVsM", ";#it{m} (GeV/#it{c}^{2});#Delta#it{#phi} (rad);counts", kTH2D, {mAxis, deltaPhiAxis});
       rMC.add("MC/system/hPhiChargeVsM", ";#it{m} (GeV/#it{c}^{2});#Delta#it{#phi} (rad);counts", kTH2D, {mAxis, deltaPhiAxis});
+      rMC.add("MC/system/hPhiRandomVsPt", ";#it{p}_{T} (GeV/#it{c});#Delta#it{#phi} (rad);counts", kTH2D, {ptAxis, deltaPhiAxis});
+      rMC.add("MC/system/hPhiChargeVsPt", ";#it{p}_{T} (GeV/#it{c});#Delta#it{#phi} (rad);counts", kTH2D, {ptAxis, deltaPhiAxis});
       rMC.addClone("MC/system/", "MC/system/selected/");
     }
 
@@ -1109,6 +1111,8 @@ struct UpcRhoAnalysis {
     rMC.fill(HIST("MC/system/hPhiCharge"), phiCharge);
     rMC.fill(HIST("MC/system/hPhiRandomVsM"), mass, phiRandom);
     rMC.fill(HIST("MC/system/hPhiChargeVsM"), mass, phiCharge);
+    rMC.fill(HIST("MC/system/hPhiRandomVsPt"), pT, phiRandom);
+    rMC.fill(HIST("MC/system/hPhiChargeVsPt"), pT, phiCharge);
 
     if (systemPassesCuts(system)) {
       rMC.fill(HIST("MC/system/selected/hM"), mass);
