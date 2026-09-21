@@ -292,6 +292,7 @@ struct UpcRhoAnalysis {
       rQC.add("QC/collisions/all/hOccupancyInTime", ";occupancy in time;counts", kTH1D, {{1100, 0.0, 1100.0}});
       rQC.add("QC/collisions/all/hRecoMode", ";reconstruction mode;counts", kTH1D, {{2, -0.5, 1.5}});
       rQC.add("QC/collisions/hNumContribVsPVTracks", ";number of track.isPVContributor() per collision;collision.numContrib();counts", kTH2D, {{101, -0.5, 100.5}, {101, -0.5, 100.5}});
+      rQC.add("QC/collisions/hLocalBC", ";BC ID;counts", kTH1D, {{o2::constants::lhc::LHCMaxBunches, -0.5, static_cast<double>(o2::constants::lhc::LHCMaxBunches) - 0.5}});
       // events with selected rho candidates
       rQC.addClone("QC/collisions/all/", "QC/collisions/trackSelections/");
       rQC.addClone("QC/collisions/all/", "QC/collisions/systemSelections/");
@@ -857,6 +858,7 @@ struct UpcRhoAnalysis {
         nPVTracks++;
     }
     rQC.fill(HIST("QC/collisions/hNumContribVsPVTracks"), nPVTracks, collision.numContrib());
+    rQC.fill(HIST("QC/collisions/hLocalBC"), collision.globalBC() % o2::constants::lhc::LHCMaxBunches);
 
     fillCollisionQcHistos<0>(collision);           // fill QC histograms before cuts
     if (!collisionPassesCuts(collision, runIndex)) // apply collision cuts
