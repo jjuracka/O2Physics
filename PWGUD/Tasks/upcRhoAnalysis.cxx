@@ -202,8 +202,8 @@ struct UpcRhoAnalysis {
   SGSelector sgSelector;
 
   const float pcEtaCut = 0.9; // physics coordination recommendation
-  const int nPions = 2;       // only study dipion final states
-  const std::vector<int> runNumbers = {544013, 544028, 544032, 544091, 544095, 544098, 544116, 544121, 544122, 544123, 544124, 544184, 544185, 544389, 544390, 544391, 544392, 544451, 544454, 544474, 544475, 544476, 544477, 544490, 544491, 544492, 544508, 544510, 544511, 544512, 544514, 544515, 544518, 544548, 544549, 544550, 544551, 544564, 544565, 544567, 544568, 544580, 544582, 544583, 544585, 544614, 544640, 544652, 544653, 544672, 544674, 544692, 544693, 544694, 544696, 544739, 544742, 544754, 544767, 544794, 544795, 544797, 544813, 544868, 544886, 544887, 544896, 544911, 544913, 544914, 544917, 544931, 544947, 544961, 544963, 544964, 544968, 544991, 544992, 545004, 545008, 545009, 545041, 545042, 545044, 545047, 545060, 545062, 545063, 545064, 545066, 545086, 545103, 545117, 545171, 545184, 545185, 545210, 545222, 545223, 545246, 545249, 545262, 545289, 545291, 545294, 545295, 545296, 545311, 545312, 545332, 545345, 545367};
+  const int nExpectedPions = 2; // only study dipion final states
+  const std::vector<int> runNumbers = {544013, 544028, 544032, 544091, 544095, 544098, 544116, 544121, 544122, 544123, 544124, 544184, 544185, 544389, 544390, 544391, 544392, 544451, 544454, 544474, 544475, 544476, 544477, 544490, 544491, 544492, 544508, 544510, 544511, 544512, 544514, 544515, 544518, 544548, 544549, 544550, 544551, 544564, 544565, 544567, 544568, 544580, 544582, 544583, 544585, 544614, 544640, 544652, 544653, 544672, 544674, 544692, 544693, 544694, 544696, 544739, 544742, 544754, 544767, 544794, 544795, 544797, 544813, 544868, 544886, 544887, 544896, 544913, 544914, 544917, 544931, 544947, 544961, 544963, 544964, 544968, 544992, 545009, 545044, 545047, 545063, 545064, 545066, 545185, 545210, 545223, 545249, 545291, 545294, 545295, 545296, 545312};
   AxisSpec runNumberAxis = {static_cast<int>(runNumbers.size()), 0.5, static_cast<double>(runNumbers.size()) + 0.5, "run number"};
 
   Configurable<bool> isPO{"isPO", false, "processing p-O data?"};
@@ -290,12 +290,14 @@ struct UpcRhoAnalysis {
       rQC.add("QC/collisions/all/hTimeFDDA", ";FDDA time (ns);counts", kTH1D, {{400, -5.0, 35.0}});
       rQC.add("QC/collisions/all/hTimeFDDC", ";FDDC time (ns);counts", kTH1D, {{400, -5.0, 35.0}});
       rQC.add("QC/collisions/all/hOccupancyInTime", ";occupancy in time;counts", kTH1D, {{1100, 0.0, 1100.0}});
+      rQC.add("QC/collisions/all/hRecoMode", ";reconstruction mode;counts", kTH1D, {{2, -0.5, 1.5}});
       rQC.add("QC/collisions/hNumContribVsPVTracks", ";number of track.isPVContributor() per collision;collision.numContrib();counts", kTH2D, {{101, -0.5, 100.5}, {101, -0.5, 100.5}});
+      rQC.add("QC/collisions/hLocalBC", ";BC ID;counts", kTH1D, {{o2::constants::lhc::LHCMaxBunches, -0.5, static_cast<double>(o2::constants::lhc::LHCMaxBunches) - 0.5}});
       // events with selected rho candidates
       rQC.addClone("QC/collisions/all/", "QC/collisions/trackSelections/");
       rQC.addClone("QC/collisions/all/", "QC/collisions/systemSelections/");
 
-      std::vector<std::string> collisionSelectionCounterLabels = {"all collisions", "rapidity gap", "ITS-TPC vertex", "same bunch pile-up", "ITS ROF border", "TF border", "#it{z} position", "number of contributors", "RCT selections", "reco flag selection", "occupancy selection"};
+      std::vector<std::string> collisionSelectionCounterLabels = {"all collisions", "rapidity gap", "ITS-TPC vertex", "same bunch pile-up", "ITS ROF border", "TF border", "vertex #it{z} position", "number of contributors", "RCT selections", "reco flag selection", "occupancy selection"};
       rQC.add("QC/collisions/hSelectionCounter", ";;collisions passing selections", kTH1D, {{static_cast<int>(collisionSelectionCounterLabels.size()), -0.5, static_cast<float>(collisionSelectionCounterLabels.size()) - 0.5}});
       rQC.add("QC/collisions/hSelectionCounterPerRun", ";;run number;collisions passing selections", kTH2D, {{static_cast<int>(collisionSelectionCounterLabels.size()), -0.5, static_cast<float>(collisionSelectionCounterLabels.size()) - 0.5}, runNumberAxis});
       for (int i = 0; i < static_cast<int>(collisionSelectionCounterLabels.size()); ++i) {
@@ -306,13 +308,13 @@ struct UpcRhoAnalysis {
         rQC.get<TH2>(HIST("QC/collisions/hSelectionCounterPerRun"))->GetYaxis()->SetBinLabel(i + 1, std::to_string(runNumbers[i]).c_str());
       // tracks
       rQC.add("QC/tracks/all/hTpcNSigmaPi", ";TPC #it{n#sigma}(#pi);counts", kTH1D, {nSigmaAxis});
-      rQC.add("QC/tracks/all/hPtVsEtaVsTpcNSigmaPi", ";TPC #it{n#sigma}(#pi);#it{p}_{T} (GeV/#it{c});#it{#eta}", kTH3D, {{100, -10.0, 10.0}, {200, 0.0, 4.0}, {18, -0.9, 0.9}});
+      rQC.add("QC/tracks/all/hPtVsEtaVsTpcNSigmaPi", ";TPC #it{n#sigma}(#pi);#it{p}_{T} (GeV/#it{c});#it{#eta}", kTH3D, {{100, -10.0, 10.0}, {100, 0.0, 1.0}, {180, -0.9, 0.9}});
       rQC.add("QC/tracks/all/hTpcNSigmaEl", ";TPC #it{n#sigma}(e);counts", kTH1D, {nSigmaAxis});
-      rQC.add("QC/tracks/all/hPtVsEtaVsTpcNSigmaEl", ";TPC #it{n#sigma}(e);#it{p}_{T} (GeV/#it{c});#it{#eta}", kTH3D, {{100, -10.0, 10.0}, {200, 0.0, 4.0}, {18, -0.9, 0.9}});
+      rQC.add("QC/tracks/all/hPtVsEtaVsTpcNSigmaEl", ";TPC #it{n#sigma}(e);#it{p}_{T} (GeV/#it{c});#it{#eta}", kTH3D, {{100, -10.0, 10.0}, {100, 0.0, 1.0}, {180, -0.9, 0.9}});
       rQC.add("QC/tracks/all/hTpcNSigmaKa", ";TPC #it{n#sigma}(K);counts", kTH1D, {nSigmaAxis});
-      rQC.add("QC/tracks/all/hPtVsEtaVsTpcNSigmaKa", ";TPC #it{n#sigma}(K);#it{p}_{T} (GeV/#it{c});#it{#eta}", kTH3D, {{100, -10.0, 10.0}, {200, 0.0, 4.0}, {18, -0.9, 0.9}});
+      rQC.add("QC/tracks/all/hPtVsEtaVsTpcNSigmaKa", ";TPC #it{n#sigma}(K);#it{p}_{T} (GeV/#it{c});#it{#eta}", kTH3D, {{100, -10.0, 10.0}, {100, 0.0, 1.0}, {180, -0.9, 0.9}});
       rQC.add("QC/tracks/all/hTpcNSigmaPr", ";TPC #it{n#sigma}(p);counts", kTH1D, {nSigmaAxis});
-      rQC.add("QC/tracks/all/hPtVsEtaVsTpcNSigmaPr", ";TPC #it{n#sigma}(p);#it{p}_{T} (GeV/#it{c});#it{#eta}", kTH3D, {{100, -10.0, 10.0}, {200, 0.0, 4.0}, {18, -0.9, 0.9}});
+      rQC.add("QC/tracks/all/hPtVsEtaVsTpcNSigmaPr", ";TPC #it{n#sigma}(p);#it{p}_{T} (GeV/#it{c});#it{#eta}", kTH3D, {{100, -10.0, 10.0}, {100, 0.0, 1.0}, {180, -0.9, 0.9}});
       rQC.add("QC/tracks/all/hDcaXYZ", ";track #it{DCA}_{z} (cm);track #it{DCA}_{xy} (cm);counts", kTH2D, {{1000, -5.0, 5.0}, {400, -2.0, 2.0}});
       rQC.add("QC/tracks/all/hItsNCls", ";ITS #it{N}_{cls};counts", kTH1D, {{9, -0.5, 8.5}});
       rQC.add("QC/tracks/all/hItsChi2NCl", ";ITS #it{#chi}^{2}/#it{N}_{cls};counts", kTH1D, {{150, 0.0, 15.0}});
@@ -330,6 +332,7 @@ struct UpcRhoAnalysis {
       rQC.addClone("QC/tracks/all/", "QC/tracks/systemSelections/");
       rQC.add("QC/tracks/trackSelections/hRemainingTracks", ";remaining tracks;counts", kTH1D, {{21, -0.5, 20.5}});
       rQC.add("QC/tracks/trackSelections/hTpcNSigmaPi2D", ";TPC #it{n#sigma}(#pi)_{leading};TPC #it{n#sigma}(#pi)_{subleading};counts", kTH2D, {nSigmaAxis, nSigmaAxis});
+      rQC.add("QC/tracks/trackSelections/hTpcNSigmaPi2DAfterCut", ";TPC #it{n#sigma}(#pi)_{leading};TPC #it{n#sigma}(#pi)_{subleading};counts", kTH2D, {nSigmaAxis, nSigmaAxis});
       rQC.add("QC/tracks/trackSelections/hTpcNSigmaEl2D", ";TPC #it{n#sigma}(e)_{leading};TPC #it{n#sigma}(e)_{subleading};counts", kTH2D, {nSigmaAxis, nSigmaAxis});
       rQC.add("QC/tracks/trackSelections/hTpcNSigmaKa2D", ";TPC #it{n#sigma}(K)_{leading};TPC #it{n#sigma}(K)_{subleading};counts", kTH2D, {nSigmaAxis, nSigmaAxis});
       rQC.add("QC/tracks/trackSelections/hTpcNSigmaPr2D", ";TPC #it{n#sigma}(p)_{leading};TPC #it{n#sigma}(p)_{subleading};counts", kTH2D, {nSigmaAxis, nSigmaAxis});
@@ -427,6 +430,8 @@ struct UpcRhoAnalysis {
       rMC.add("MC/system/hPhiCharge", ";#Delta#it{#phi}_{charge} (rad);counts", kTH1D, {deltaPhiAxis});
       rMC.add("MC/system/hPhiRandomVsM", ";#it{m} (GeV/#it{c}^{2});#Delta#it{#phi} (rad);counts", kTH2D, {mAxis, deltaPhiAxis});
       rMC.add("MC/system/hPhiChargeVsM", ";#it{m} (GeV/#it{c}^{2});#Delta#it{#phi} (rad);counts", kTH2D, {mAxis, deltaPhiAxis});
+      rMC.add("MC/system/hPhiRandomVsPt", ";#it{p}_{T} (GeV/#it{c});#Delta#it{#phi} (rad);counts", kTH2D, {ptAxis, deltaPhiAxis});
+      rMC.add("MC/system/hPhiChargeVsPt", ";#it{p}_{T} (GeV/#it{c});#Delta#it{#phi} (rad);counts", kTH2D, {ptAxis, deltaPhiAxis});
       rMC.addClone("MC/system/", "MC/system/selected/");
     }
 
@@ -448,9 +453,11 @@ struct UpcRhoAnalysis {
       rResolution.add("MC/resolution/system/1D/hM", ";#it{m}_{reco} - #it{m}_{true} (GeV/#it{c}^{2});counts", kTH1D, {resolutionAxis});
       rResolution.add("MC/resolution/system/2D/hMVsM", ";#it{m}_{true} (GeV/#it{c}^{2});#it{m}_{reco} (GeV/#it{c}^{2});counts", kTH2D, {mAxis, mAxis});
       rResolution.add("MC/resolution/system/1D/hPt", ";1/#it{p}_{T, reco} - 1/#it{p}_{T, true} (1/(GeV/#it{c}));counts", kTH1D, {resolutionAxis});
-      rResolution.add("MC/resolution/system/2D/hPtVsPt", ";1/#it{p}_{T, true} (GeV/#it{c});#it{p}_{T, reco} (GeV/#it{c});counts", kTH2D, {ptAxis, ptAxis});
+      rResolution.add("MC/resolution/system/2D/hPtVsPt", ";#it{p}_{T, true} (GeV/#it{c});#it{p}_{T, reco} (GeV/#it{c});counts", kTH2D, {ptAxis, ptAxis});
       rResolution.add("MC/resolution/system/1D/hY", ";#it{y}_{reco} - #it{y}_{true};counts", kTH1D, {resolutionAxis});
       rResolution.add("MC/resolution/system/2D/hYVsY", ";#it{y}_{true};#it{y}_{reco};counts", kTH2D, {yAxis, yAxis});
+      rResolution.add("MC/resolution/system/1D/hPhi", ";#it{#phi}_{reco} - #it{#phi}_{true} (rad);counts", kTH1D, {resolutionAxis});
+      rResolution.add("MC/resolution/system/2D/hPhiVsPhi", ";#it{#phi}_{true} (rad);#it{#phi}_{reco} (rad);counts", kTH2D, {phiAxis, phiAxis});
       rResolution.add("MC/resolution/system/1D/hDeltaPhi", ";#Delta#it{#phi}_{reco} - #Delta#it{#phi}_{true} (rad);counts", kTH1D, {resolutionAxis});
       rResolution.add("MC/resolution/system/2D/hDeltaPhiVsDeltaPhi", ";#Delta#it{#phi}_{true} (rad);#Delta#it{#phi}_{reco} (rad);counts", kTH2D, {deltaPhiAxis, deltaPhiAxis});
     }
@@ -481,6 +488,7 @@ struct UpcRhoAnalysis {
     rQC.fill(HIST("QC/collisions/") + HIST(AppliedSelections[cuts]) + HIST("hTimeFDDA"), collision.timeFDDA());
     rQC.fill(HIST("QC/collisions/") + HIST(AppliedSelections[cuts]) + HIST("hTimeFDDC"), collision.timeFDDC());
     rQC.fill(HIST("QC/collisions/") + HIST(AppliedSelections[cuts]) + HIST("hOccupancyInTime"), collision.occupancyInTime());
+    rQC.fill(HIST("QC/collisions/") + HIST(AppliedSelections[cuts]) + HIST("hRecoMode"), collision.flags());
   }
 
   template <int cuts, typename T>
@@ -850,6 +858,7 @@ struct UpcRhoAnalysis {
         nPVTracks++;
     }
     rQC.fill(HIST("QC/collisions/hNumContribVsPVTracks"), nPVTracks, collision.numContrib());
+    rQC.fill(HIST("QC/collisions/hLocalBC"), collision.globalBC() % o2::constants::lhc::LHCMaxBunches);
 
     fillCollisionQcHistos<0>(collision);           // fill QC histograms before cuts
     if (!collisionPassesCuts(collision, runIndex)) // apply collision cuts
@@ -895,16 +904,12 @@ struct UpcRhoAnalysis {
     }
     rQC.fill(HIST("QC/tracks/trackSelections/hRemainingTracks"), cutTracks.size());
 
-    if (static_cast<int>(cutTracks.size()) != nPions) // further consider only two pion systems
+    if (static_cast<int>(cutTracks.size()) != nExpectedPions) // further consider only two pion systems
       return;
-    for (int i = 0; i < nPions; i++) {
+    for (int i = 0; i < nExpectedPions; i++) {
       rQC.fill(HIST("QC/tracks/hSelectionCounter"), 15);
       rQC.fill(HIST("QC/tracks/hSelectionCounterPerRun"), 15, runIndex);
     }
-    rQC.fill(HIST("QC/tracks/trackSelections/hTpcNSigmaPi2D"), cutTracks[0].tpcNSigmaPi(), cutTracks[1].tpcNSigmaPi());
-    rQC.fill(HIST("QC/tracks/trackSelections/hTpcNSigmaEl2D"), cutTracks[0].tpcNSigmaEl(), cutTracks[1].tpcNSigmaEl());
-    rQC.fill(HIST("QC/tracks/trackSelections/hTpcNSigmaKa2D"), cutTracks[0].tpcNSigmaKa(), cutTracks[1].tpcNSigmaKa());
-    rQC.fill(HIST("QC/tracks/trackSelections/hTpcNSigmaPr2D"), cutTracks[0].tpcNSigmaPr(), cutTracks[1].tpcNSigmaPr());
 
     // create a vector of 4-vectors for selected tracks
     std::vector<ROOT::Math::PxPyPzMVector> cutTracksLVs;
@@ -915,6 +920,11 @@ struct UpcRhoAnalysis {
     // differentiate leading- and subleading-momentum tracks
     auto leadingTrack = momentum(cutTracks[0].px(), cutTracks[0].py(), cutTracks[0].pz()) > momentum(cutTracks[1].px(), cutTracks[1].py(), cutTracks[1].pz()) ? cutTracks[0] : cutTracks[1];
     auto subleadingTrack = (leadingTrack == cutTracks[0]) ? cutTracks[1] : cutTracks[0];
+
+    rQC.fill(HIST("QC/tracks/trackSelections/hTpcNSigmaPi2D"), leadingTrack.tpcNSigmaPi(), subleadingTrack.tpcNSigmaPi());
+    rQC.fill(HIST("QC/tracks/trackSelections/hTpcNSigmaEl2D"), leadingTrack.tpcNSigmaEl(), subleadingTrack.tpcNSigmaEl());
+    rQC.fill(HIST("QC/tracks/trackSelections/hTpcNSigmaKa2D"), leadingTrack.tpcNSigmaKa(), subleadingTrack.tpcNSigmaKa());
+    rQC.fill(HIST("QC/tracks/trackSelections/hTpcNSigmaPr2D"), leadingTrack.tpcNSigmaPr(), subleadingTrack.tpcNSigmaPr());
 
     float leadingPt = leadingTrack.pt();
     float subleadingPt = subleadingTrack.pt();
@@ -944,6 +954,7 @@ struct UpcRhoAnalysis {
 
     if (!tracksPassPID(cutTracks)) // apply PID cut
       return;
+    rQC.fill(HIST("QC/tracks/trackSelections/hTpcNSigmaPi2DAfterCut"), leadingTrack.tpcNSigmaPi(), subleadingTrack.tpcNSigmaPi());
 
     for (const auto& cutTrack : cutTracks) {
       rQC.fill(HIST("QC/tracks/hSelectionCounter"), 16);
@@ -1083,7 +1094,7 @@ struct UpcRhoAnalysis {
     }
     rMC.fill(HIST("MC/collisions/hNPions"), cutMcParticles.size());
 
-    if (static_cast<int>(cutMcParticles.size()) != 2)
+    if (static_cast<int>(cutMcParticles.size()) != nExpectedPions) // further consider only two pion systems
       return;
     if (mcParticlesLVs.size() != cutMcParticles.size()) // sanity check
       return;
@@ -1115,6 +1126,8 @@ struct UpcRhoAnalysis {
     rMC.fill(HIST("MC/system/hPhiCharge"), phiCharge);
     rMC.fill(HIST("MC/system/hPhiRandomVsM"), mass, phiRandom);
     rMC.fill(HIST("MC/system/hPhiChargeVsM"), mass, phiCharge);
+    rMC.fill(HIST("MC/system/hPhiRandomVsPt"), pT, phiRandom);
+    rMC.fill(HIST("MC/system/hPhiChargeVsPt"), pT, phiCharge);
 
     if (systemPassesCuts(system)) {
       rMC.fill(HIST("MC/system/selected/hM"), mass);
@@ -1163,6 +1176,8 @@ struct UpcRhoAnalysis {
   void processDGdata(FullUdDgCollision const& collision, FullUdTracks const& tracks)
   {
     int runIndex = getRunIndex(collision.runNumber(), runNumbers);
+    rQC.fill(HIST("QC/collisions/hSelectionCounter"), 0); // all collisions
+    rQC.fill(HIST("QC/collisions/hSelectionCounterPerRun"), 0, runIndex);
     rQC.fill(HIST("QC/collisions/hSelectionCounter"), 1); // no single-gap collisions in dataset
     rQC.fill(HIST("QC/collisions/hSelectionCounterPerRun"), 1, runIndex);
 
@@ -1219,7 +1234,7 @@ struct UpcRhoAnalysis {
       recoTracks.push_back(track);
     }
 
-    if (truePionLVs.size() != 2 || recoPionLVs.size() != 2)
+    if (static_cast<int>(truePionLVs.size()) != nExpectedPions || static_cast<int>(recoPionLVs.size()) != nExpectedPions)
       return;
 
     ROOT::Math::PxPyPzMVector trueSystem = reconstructSystem(truePionLVs);
@@ -1233,6 +1248,8 @@ struct UpcRhoAnalysis {
     rResolution.fill(HIST("MC/resolution/system/2D/hPtVsPt"), trueSystem.Pt(), recoSystem.Pt());
     rResolution.fill(HIST("MC/resolution/system/1D/hY"), recoSystem.Rapidity() - trueSystem.Rapidity());
     rResolution.fill(HIST("MC/resolution/system/2D/hYVsY"), trueSystem.Rapidity(), recoSystem.Rapidity());
+    rResolution.fill(HIST("MC/resolution/system/1D/hPhi"), phi(recoSystem.Px(), recoSystem.Py()) - phi(trueSystem.Px(), trueSystem.Py()));
+    rResolution.fill(HIST("MC/resolution/system/2D/hPhiVsPhi"), phi(trueSystem.Px(), trueSystem.Py()), phi(recoSystem.Px(), recoSystem.Py()));
     rResolution.fill(HIST("MC/resolution/system/1D/hDeltaPhi"), recoDeltaPhi - trueDeltaPhi);
     rResolution.fill(HIST("MC/resolution/system/2D/hDeltaPhiVsDeltaPhi"), trueDeltaPhi, recoDeltaPhi);
 
