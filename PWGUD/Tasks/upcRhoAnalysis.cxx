@@ -720,7 +720,7 @@ struct UpcRhoAnalysis {
     rQC.fill(HIST("QC/tracks/hSelectionCounter"), 12);
     rQC.fill(HIST("QC/tracks/hSelectionCounterPerRun"), 12, runIndex);
 
-    if (std::abs(track.dcaZ()) > tracksDcaMaxCut || std::abs(track.dcaXY()) > (0.0105 + 0.0350 / std::pow(track.pt(), 1.01)))
+    if (std::abs(track.dcaZ()) > tracksDcaMaxCut || std::abs(track.dcaXY()) > (0.0105 + 0.0350 / std::pow(track.pt(), 1.1)))
       return false;
     rQC.fill(HIST("QC/tracks/hSelectionCounter"), 13);
     rQC.fill(HIST("QC/tracks/hSelectionCounterPerRun"), 13, runIndex);
