@@ -107,6 +107,8 @@ DECLARE_SOA_COLUMN(LeadingTrackKaPID, leadingTrackKaPID, float);
 DECLARE_SOA_COLUMN(SubleadingTrackKaPID, subleadingTrackKaPID, float);
 DECLARE_SOA_COLUMN(LeadingTrackPrPID, leadingTrackPrPID, float);
 DECLARE_SOA_COLUMN(SubleadingTrackPrPID, subleadingTrackPrPID, float);
+DECLARE_SOA_COLUMN(LeadingTrackTofHit, leadingTrackTofHit, int);
+DECLARE_SOA_COLUMN(SubleadingTrackTofHit, subleadingTrackTofHit, int);
 } // namespace reco_tree
 DECLARE_SOA_TABLE(RecoTree, "AOD", "RECOTREE",
                   reco_tree::RecoSetting, reco_tree::RunNumber, reco_tree::PosX, reco_tree::PosY, reco_tree::PosZ, reco_tree::OccupancyInTime, reco_tree::HadronicRate, reco_tree::LocalBC,
@@ -120,8 +122,8 @@ DECLARE_SOA_TABLE(RecoTree, "AOD", "RECOTREE",
                   reco_tree::LeadingTrackPiPID, reco_tree::SubleadingTrackPiPID,
                   reco_tree::LeadingTrackElPID, reco_tree::SubleadingTrackElPID,
                   reco_tree::LeadingTrackKaPID, reco_tree::SubleadingTrackKaPID,
-                  reco_tree::LeadingTrackPrPID, reco_tree::SubleadingTrackPrPID);
-
+                  reco_tree::LeadingTrackPrPID, reco_tree::SubleadingTrackPrPID,
+                  reco_tree::LeadingTrackTofHit, reco_tree::SubleadingTrackTofHit);
 namespace mc_tree
 {
 // misc event info
@@ -950,7 +952,8 @@ struct UpcRhoAnalysis {
              leadingTrack.tpcNSigmaPi(), subleadingTrack.tpcNSigmaPi(),
              leadingTrack.tpcNSigmaEl(), subleadingTrack.tpcNSigmaEl(),
              leadingTrack.tpcNSigmaKa(), subleadingTrack.tpcNSigmaKa(),
-             leadingTrack.tpcNSigmaPr(), subleadingTrack.tpcNSigmaPr());
+             leadingTrack.tpcNSigmaPr(), subleadingTrack.tpcNSigmaPr(),
+             leadingTrack.hasTOF(), subleadingTrack.hasTOF());
 
     if (!tracksPassPID(cutTracks)) // apply PID cut
       return;
