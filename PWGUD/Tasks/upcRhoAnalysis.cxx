@@ -151,6 +151,10 @@ DECLARE_SOA_TABLE(McTree, "AOD", "MCTREE",
 
 namespace resolution_tree
 {
+// misc event info
+DECLARE_SOA_COLUMN(GenLocalBC, genLocalBC, int);
+DECLARE_SOA_COLUMN(RecoRunNumber, recoRunNumber, int);
+DECLARE_SOA_COLUMN(RecoLocalBC, recoLocalBC, int);
 // vertex info
 DECLARE_SOA_COLUMN(GenPosX, genPosX, float);
 DECLARE_SOA_COLUMN(GenPosY, genPosY, float);
@@ -186,6 +190,8 @@ DECLARE_SOA_COLUMN(SubleadingRecoEta, subleadingRecoEta, float);
 DECLARE_SOA_COLUMN(SubleadingRecoPhi, subleadingRecoPhi, float);
 } // namespace resolution_tree
 DECLARE_SOA_TABLE(ResolutionTree, "AOD", "RESOLUTIONTREE",
+                  resolution_tree::GenLocalBC,
+                  resolution_tree::RecoRunNumber, resolution_tree::RecoLocalBC,
                   resolution_tree::GenPosX, resolution_tree::GenPosY, resolution_tree::GenPosZ,
                   resolution_tree::RecoPosX, resolution_tree::RecoPosY, resolution_tree::RecoPosZ,
                   resolution_tree::TotalFT0AmplitudeA, resolution_tree::TotalFT0AmplitudeC, resolution_tree::TotalFV0AmplitudeA, resolution_tree::TotalFDDAmplitudeA, resolution_tree::TotalFDDAmplitudeC,
@@ -1261,7 +1267,9 @@ struct UpcRhoAnalysis {
     auto leadingRecoPion = momentum(recoTracks[0].px(), recoTracks[0].py(), recoTracks[0].pz()) > momentum(recoTracks[1].px(), recoTracks[1].py(), recoTracks[1].pz()) ? recoTracks[0] : recoTracks[1];
     auto subleadingRecoPion = (leadingRecoPion == recoTracks[0]) ? recoTracks[1] : recoTracks[0];
 
-    resolutionTree(mcCollision.posX(), mcCollision.posY(), mcCollision.posZ(),
+    resolutionTree(mcCollision.globalBC() % o2::constants::lhc::LHCMaxBunches,
+                   collision.runNumber(), collision.globalBC() % o2::constants::lhc::LHCMaxBunches,
+                   mcCollision.posX(), mcCollision.posY(), mcCollision.posZ(),
                    collision.posX(), collision.posY(), collision.posZ(),
                    collision.totalFT0AmplitudeA(), collision.totalFT0AmplitudeC(), collision.totalFV0AmplitudeA(), collision.totalFDDAmplitudeA(), collision.totalFDDAmplitudeC(),
                    collision.timeFT0A(), collision.timeFT0C(), collision.timeFV0A(), collision.timeFDDA(), collision.timeFDDC(),
@@ -1303,7 +1311,9 @@ struct UpcRhoAnalysis {
     auto leadingRecoPion = momentum(recoTracks[0].px(), recoTracks[0].py(), recoTracks[0].pz()) > momentum(recoTracks[1].px(), recoTracks[1].py(), recoTracks[1].pz()) ? recoTracks[0] : recoTracks[1];
     auto subleadingRecoPion = (leadingRecoPion == recoTracks[0]) ? recoTracks[1] : recoTracks[0];
 
-    resolutionTree(mcCollision.posX(), mcCollision.posY(), mcCollision.posZ(),
+    resolutionTree(mcCollision.globalBC() % o2::constants::lhc::LHCMaxBunches,
+                   collision.runNumber(), collision.globalBC() % o2::constants::lhc::LHCMaxBunches,
+                   mcCollision.posX(), mcCollision.posY(), mcCollision.posZ(),
                    collision.posX(), collision.posY(), collision.posZ(),
                    collision.totalFT0AmplitudeA(), collision.totalFT0AmplitudeC(), collision.totalFV0AmplitudeA(), collision.totalFDDAmplitudeA(), collision.totalFDDAmplitudeC(),
                    collision.timeFT0A(), collision.timeFT0C(), collision.timeFV0A(), collision.timeFDDA(), collision.timeFDDC(),
