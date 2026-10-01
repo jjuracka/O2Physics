@@ -181,6 +181,7 @@ DECLARE_SOA_COLUMN(LeadingGenPhi, leadingGenPhi, float);
 DECLARE_SOA_COLUMN(LeadingRecoPt, leadingRecoPt, float);
 DECLARE_SOA_COLUMN(LeadingRecoEta, leadingRecoEta, float);
 DECLARE_SOA_COLUMN(LeadingRecoPhi, leadingRecoPhi, float);
+DECLARE_SOA_COLUMN(LeadingRecoTofHit, leadingRecoTofHit, int);
 DECLARE_SOA_COLUMN(SubleadingSign, subleadingSign, int);
 DECLARE_SOA_COLUMN(SubleadingGenPt, subleadingGenPt, float);
 DECLARE_SOA_COLUMN(SubleadingGenEta, subleadingGenEta, float);
@@ -188,6 +189,7 @@ DECLARE_SOA_COLUMN(SubleadingGenPhi, subleadingGenPhi, float);
 DECLARE_SOA_COLUMN(SubleadingRecoPt, subleadingRecoPt, float);
 DECLARE_SOA_COLUMN(SubleadingRecoEta, subleadingRecoEta, float);
 DECLARE_SOA_COLUMN(SubleadingRecoPhi, subleadingRecoPhi, float);
+DECLARE_SOA_COLUMN(SubleadingRecoTofHit, subleadingRecoTofHit, int);
 } // namespace resolution_tree
 DECLARE_SOA_TABLE(ResolutionTree, "AOD", "RESOLUTIONTREE",
                   resolution_tree::GenLocalBC,
@@ -197,9 +199,9 @@ DECLARE_SOA_TABLE(ResolutionTree, "AOD", "RESOLUTIONTREE",
                   resolution_tree::TotalFT0AmplitudeA, resolution_tree::TotalFT0AmplitudeC, resolution_tree::TotalFV0AmplitudeA, resolution_tree::TotalFDDAmplitudeA, resolution_tree::TotalFDDAmplitudeC,
                   resolution_tree::TimeFT0A, resolution_tree::TimeFT0C, resolution_tree::TimeFV0A, resolution_tree::TimeFDDA, resolution_tree::TimeFDDC,
                   resolution_tree::LeadingSign, resolution_tree::LeadingGenPt, resolution_tree::LeadingGenEta, resolution_tree::LeadingGenPhi,
-                  resolution_tree::LeadingRecoPt, resolution_tree::LeadingRecoEta, resolution_tree::LeadingRecoPhi,
+                  resolution_tree::LeadingRecoPt, resolution_tree::LeadingRecoEta, resolution_tree::LeadingRecoPhi, resolution_tree::LeadingRecoTofHit,
                   resolution_tree::SubleadingSign, resolution_tree::SubleadingGenPt, resolution_tree::SubleadingGenEta, resolution_tree::SubleadingGenPhi,
-                  resolution_tree::SubleadingRecoPt, resolution_tree::SubleadingRecoEta, resolution_tree::SubleadingRecoPhi);
+                  resolution_tree::SubleadingRecoPt, resolution_tree::SubleadingRecoEta, resolution_tree::SubleadingRecoPhi, resolution_tree::SubleadingRecoTofHit);
 } // namespace o2::aod
 
 struct UpcRhoAnalysis {
@@ -1274,9 +1276,9 @@ struct UpcRhoAnalysis {
                    collision.totalFT0AmplitudeA(), collision.totalFT0AmplitudeC(), collision.totalFV0AmplitudeA(), collision.totalFDDAmplitudeA(), collision.totalFDDAmplitudeC(),
                    collision.timeFT0A(), collision.timeFT0C(), collision.timeFV0A(), collision.timeFDDA(), collision.timeFDDC(),
                    leadingTruePion.pdgCode() / std::abs(leadingTruePion.pdgCode()), pt(leadingTruePion.px(), leadingTruePion.py()), eta(leadingTruePion.px(), leadingTruePion.py(), leadingTruePion.pz()), phi(leadingTruePion.px(), leadingTruePion.py()),
-                   pt(leadingRecoPion.px(), leadingRecoPion.py()), eta(leadingRecoPion.px(), leadingRecoPion.py(), leadingRecoPion.pz()), phi(leadingRecoPion.px(), leadingRecoPion.py()),
+                   pt(leadingRecoPion.px(), leadingRecoPion.py()), eta(leadingRecoPion.px(), leadingRecoPion.py(), leadingRecoPion.pz()), phi(leadingRecoPion.px(), leadingRecoPion.py()), leadingRecoPion.hasTOF(),
                    subleadingTruePion.pdgCode() / std::abs(subleadingTruePion.pdgCode()), pt(subleadingTruePion.px(), subleadingTruePion.py()), eta(subleadingTruePion.px(), subleadingTruePion.py(), subleadingTruePion.pz()), phi(subleadingTruePion.px(), subleadingTruePion.py()),
-                   pt(subleadingRecoPion.px(), subleadingRecoPion.py()), eta(subleadingRecoPion.px(), subleadingRecoPion.py(), subleadingRecoPion.pz()), phi(subleadingRecoPion.px(), subleadingRecoPion.py()));
+                   pt(subleadingRecoPion.px(), subleadingRecoPion.py()), eta(subleadingRecoPion.px(), subleadingRecoPion.py(), subleadingRecoPion.pz()), phi(subleadingRecoPion.px(), subleadingRecoPion.py()), subleadingRecoPion.hasTOF());
   }
   PROCESS_SWITCH(UpcRhoAnalysis, processResolution, "check resolution of kinematic variables", false);
 
@@ -1318,9 +1320,9 @@ struct UpcRhoAnalysis {
                    collision.totalFT0AmplitudeA(), collision.totalFT0AmplitudeC(), collision.totalFV0AmplitudeA(), collision.totalFDDAmplitudeA(), collision.totalFDDAmplitudeC(),
                    collision.timeFT0A(), collision.timeFT0C(), collision.timeFV0A(), collision.timeFDDA(), collision.timeFDDC(),
                    leadingTruePion.pdgCode() / std::abs(leadingTruePion.pdgCode()), pt(leadingTruePion.px(), leadingTruePion.py()), eta(leadingTruePion.px(), leadingTruePion.py(), leadingTruePion.pz()), phi(leadingTruePion.px(), leadingTruePion.py()),
-                   pt(leadingRecoPion.px(), leadingRecoPion.py()), eta(leadingRecoPion.px(), leadingRecoPion.py(), leadingRecoPion.pz()), phi(leadingRecoPion.px(), leadingRecoPion.py()),
+                   pt(leadingRecoPion.px(), leadingRecoPion.py()), eta(leadingRecoPion.px(), leadingRecoPion.py(), leadingRecoPion.pz()), phi(leadingRecoPion.px(), leadingRecoPion.py()), leadingRecoPion.hasTOF(),
                    subleadingTruePion.pdgCode() / std::abs(subleadingTruePion.pdgCode()), pt(subleadingTruePion.px(), subleadingTruePion.py()), eta(subleadingTruePion.px(), subleadingTruePion.py(), subleadingTruePion.pz()), phi(subleadingTruePion.px(), subleadingTruePion.py()),
-                   pt(subleadingRecoPion.px(), subleadingRecoPion.py()), eta(subleadingRecoPion.px(), subleadingRecoPion.py(), subleadingRecoPion.pz()), phi(subleadingRecoPion.px(), subleadingRecoPion.py()));
+                   pt(subleadingRecoPion.px(), subleadingRecoPion.py()), eta(subleadingRecoPion.px(), subleadingRecoPion.py(), subleadingRecoPion.pz()), phi(subleadingRecoPion.px(), subleadingRecoPion.py()), subleadingRecoPion.hasTOF());
   }
   PROCESS_SWITCH(UpcRhoAnalysis, processMcRecoWithTruth, "process MC reco with access to MC truth", false);
 
